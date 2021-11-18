@@ -1,3 +1,5 @@
+#### ⚠️ You should be aware that the contract has not been auditized and that there may be a bug in the action.
+
 # Solana Token Sale Program
 
 <p align="center">
@@ -5,7 +7,17 @@
     <img alt="Solana" src="https://i.imgur.com/uBVzyX3.png" width="250" />
   </a>
 </p>
-Solana Token Sale Program which provide to exchange the SOL to token.<p><p>
+
+This repository includes a contract that provides an escrow program for selling tokens in Solana.
+
+You can use this contract to sell your own tokens to user who want to buy your tokens.
+
+In addition, repository provides an RPC client that can interact with the upper contract.
+
+> If you are interested in exchanging tokens with tokens, please refer to the following repository.
+> https://github.com/paul-schaaf/solana-escrow<p>This repository only provides the function to exchange SOL to tokens.
+
+<p><p>
 
 ## Prerequisite
 

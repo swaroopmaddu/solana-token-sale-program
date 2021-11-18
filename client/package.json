@@ -7,7 +7,8 @@
     "compile": "tsc -p ./tsconfig.json",
     "setup-validator": "solana-test-validator -r --bpf-program 4yBTZXsuz7c1X3PJF4PPCJr8G6HnNAgRvzAWVoFZMncH",
     "setup" : "npm run compile && node build/setup.js",
-    "transaction": "npm run compile && node build/transaction.js"
+    "startTokenSale": "npm run compile && node build/setup.js && node build/initTokenSaleProgram.js",
+    "buyToken": "npm run compile && node build/buyToken.js"
   },
   "author": "",
   "license": "ISC",

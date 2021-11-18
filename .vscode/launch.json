@@ -11,7 +11,7 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}/client/src/transaction.ts",
+            "program": "${workspaceFolder}/client/src/buyToken.ts",
             "preLaunchTask": "tsc: build - client/tsconfig.json",
             "outFiles": [
                 "${workspaceFolder}/**/*.js"

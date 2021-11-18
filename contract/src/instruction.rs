@@ -8,9 +8,7 @@ pub enum TokenSaleInstruction {
         swap_sol_amount: u64,
         swap_token_amount: u64,
     },
-    BuyToken {
-        data: u64,
-    },
+    BuyToken {},
     // add more instruction what you want
 }
 
@@ -26,9 +24,7 @@ impl TokenSaleInstruction {
                 swap_sol_amount: Self::unpack_byte(rest, 0)?,
                 swap_token_amount: Self::unpack_byte(rest, 1)?,
             }),
-            1 => Ok(Self::BuyToken {
-                data: Self::unpack_byte(rest, 0)?,
-            }),
+            1 => Ok(Self::BuyToken {}),
             _ => Err(InvalidInstruction.into()),
         };
     }

@@ -1,9 +1,25 @@
 import { Connection, Keypair, PublicKey } from "@solana/web3.js";
-import {
-  TokenSaleAccountLayoutInterface,
-  ExpectedTokenSaleAccountLayoutInterface,
-} from "./account";
+import { TokenSaleAccountLayoutInterface, ExpectedTokenSaleAccountLayoutInterface } from "./account";
 import BN = require("bn.js");
+import fs = require("fs");
+
+const envItems = [
+  "CUSTOM_PROGRAM_ID",
+  "SELLER_PUBLIC_KEY",
+  "SELLER_PRIVATE_KEY",
+  "BUYER_PUBLIC_KEY",
+  "BUYER_PRIVATE_KEY",
+  "TOKEN_PUBKEY",
+  "SELLER_TOKEN_ACCOUNT_PUBKEY",
+  "TEMP_TOKEN_ACCOUNT_PUBKEY",
+  "TOKEN_SALE_PROGRAM_ACCOUNT_PUBKEY",
+];
+
+export function updateEnv() {
+  const eol = "\n";
+  const envContents = envItems.map((item) => `${item}=${process.env[item]}`).join(eol);
+  fs.writeFileSync(".env", envContents);
+}
 
 export const getKeypair = (publicKey: string, privateKey: Uint8Array) =>
   new Keypair({
@@ -23,10 +39,7 @@ export const createAccountInfo = (pubkey: PublicKey, isSigner: boolean, isWritab
   };
 };
 
-export const checkAccountInitialized = async (
-  connection: Connection,
-  customAccountPubkey: PublicKey
-) => {
+export const checkAccountInitialized = async (connection: Connection, customAccountPubkey: PublicKey) => {
   const customAccount = await connection.getAccountInfo(customAccountPubkey);
 
   if (customAccount === null || customAccount.data.length === 0) {
@@ -62,10 +75,7 @@ export const checkAccountDataIsValid = (
       }
 
       //value is not matched expected one.
-      const isBufferSame = Buffer.compare(
-        value,
-        Buffer.from(new BN(expectedValue).toArray("le", value.length))
-      );
+      const isBufferSame = Buffer.compare(value, Buffer.from(new BN(expectedValue).toArray("le", value.length)));
 
       if (isBufferSame !== 0) {
         console.log(`[${key}] : expected value is ${expectedValue}, but current value is ${value}`);

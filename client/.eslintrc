@@ -14,7 +14,7 @@
     "no-console": "off",
     "no-undef": "error",
     "no-unused-vars": "error",
-    "max-len":["error",{"code":100, "ignoreTrailingComments":true}],
+    "max-len":["error",{"code":120, "ignoreTrailingComments":true}],
     "unused-imports/no-unused-imports-ts": "warn",
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/explicit-function-return-type": "off",
@@ -23,7 +23,7 @@
     "prettier/prettier":[
       "error",
       {
-        "printWidth": 100
+        "printWidth": 120
       }
     ]
   },

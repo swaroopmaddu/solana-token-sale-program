@@ -187,4 +187,77 @@ impl Processor {
 
         return Ok(());
     }
+
+    //seller_account_info
+    //seller_token_account_info - For receive remain token 
+    //temp_token_account_info - For retrieve remain token
+    //token_program - For transfer the token
+    //pda - For signing when send the token from temp token account and close temp token account
+    //token sale program account info - To close token sale program
+    fn end_token_sale(accounts: &[AccountInfo], token_sale_program_id: &Pubkey) -> ProgramResult {
+        let account_info_iter = &mut accounts.iter();
+
+        let seller_account_info = next_account_info(account_info_iter)?;
+        let seller_token_account_info = next_account_info(account_info_iter)?;
+        let temp_token_account_info = next_account_info(account_info_iter)?;
+        let token_program = next_account_info(account_info_iter)?;
+
+        let (pda, _bump_seed) =
+            Pubkey::find_program_address(&[b"token_sale"], token_sale_program_id);
+        let pda_account_info = next_account_info(account_info_iter)?;
+
+        msg!("transfer Token : temp token account -> seller token account");
+        let temp_token_account_info_data = Account::unpack(&temp_token_account_info.data.borrow())?;
+
+        let transfer_token_to_seller_ix = spl_token::instruction::transfer(
+            token_program.key,
+            temp_token_account_info.key,
+            seller_token_account_info.key,
+            &pda,
+            &[&pda],
+            temp_token_account_info_data.amount,
+        )?;
+
+        invoke_signed(
+            &transfer_token_to_seller_ix,
+            &[
+                temp_token_account_info.clone(),
+                seller_token_account_info.clone(),
+                pda_account_info.clone(),
+                token_program.clone(),
+            ],
+            &[&[&b"token_sale"[..], &[_bump_seed]]],
+        )?;
+
+        msg!("close account : temp token account -> seller account");
+        let close_temp_token_account_ix = spl_token::instruction::close_account(
+            token_program.key,
+            temp_token_account_info.key,
+            seller_account_info.key,
+            &pda,
+            &[&pda],
+        )?;
+
+        invoke_signed(
+            &close_temp_token_account_ix,
+            &[
+                token_program.clone(),
+                temp_token_account_info.clone(),
+                seller_account_info.clone(),
+                pda_account_info.clone(),
+            ],
+            &[&[&b"token_sale"[..], &[_bump_seed]]],
+        )?;
+
+        msg!("close token sale program");
+        let token_sale_program_account_info = next_account_info(account_info_iter)?;
+        **seller_account_info.try_borrow_mut_lamports()? = seller_account_info
+            .lamports()
+            .checked_add(token_sale_program_account_info.lamports())
+            .ok_or(ProgramError::InsufficientFunds)?;
+        **token_sale_program_account_info.try_borrow_mut_lamports()? = 0;
+        *token_sale_program_account_info.try_borrow_mut_data()? = &mut [];
+
+        return Ok(());
+    }
 }

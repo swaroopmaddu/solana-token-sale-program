@@ -21,7 +21,7 @@ import {
 } from "./account";
 import { AccountLayout, Token, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 
-type InstructionNumber = 0 | 1;
+type InstructionNumber = 0 | 1 | 2;
 
 const transaction = async () => {
   //phase1 (setup Transaction & send Transaction)
@@ -38,8 +38,8 @@ const transaction = async () => {
   const sellerTokenAccountPubkey = new PublicKey(process.env.SELLER_TOKEN_ACCOUNT_PUBKEY!);
 
   const instruction: InstructionNumber = 0;
-  const amountOfTokenWantToSale = 1000;
-  const swapSolAmount = 1; // 이거 소수점 처리가능한가?
+  const amountOfTokenWantToSale = 100;
+  const swapSolAmount = 1;
   const swapTokenAmount = 10;
 
   const tempTokenAccountKeypair = new Keypair();

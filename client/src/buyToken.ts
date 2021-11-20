@@ -15,7 +15,7 @@ import { createAccountInfo, checkAccountInitialized } from "./utils";
 import { Token, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { TokenSaleAccountLayoutInterface, TokenSaleAccountLayout } from "./account";
 
-type InstructionNumber = 0 | 1;
+type InstructionNumber = 0 | 1 | 2;
 
 const transaction = async () => {
   //phase1 (setup Transaction & send Transaction)
@@ -31,12 +31,12 @@ const transaction = async () => {
   });
 
   const tokenPubkey = new PublicKey(process.env.TOKEN_PUBKEY!);
-  const tokenSaleProgramPubkey = new PublicKey(process.env.TOKEN_SALE_PROGRAM_ACCOUNT_PUBKEY!);
+  const tokenSaleProgramAccountPubkey = new PublicKey(process.env.TOKEN_SALE_PROGRAM_ACCOUNT_PUBKEY!);
   const sellerTokenAccountPubkey = new PublicKey(process.env.SELLER_TOKEN_ACCOUNT_PUBKEY!);
   const tempTokenAccountPubkey = new PublicKey(process.env.TEMP_TOKEN_ACCOUNT_PUBKEY!);
   const instruction: InstructionNumber = 1;
 
-  const tokenSaleProgramAccount = await checkAccountInitialized(connection, tokenSaleProgramPubkey);
+  const tokenSaleProgramAccount = await checkAccountInitialized(connection, tokenSaleProgramAccountPubkey);
   const encodedTokenSaleProgramAccountData = tokenSaleProgramAccount.data;
   const decodedTokenSaleProgramAccountData = TokenSaleAccountLayout.decode(
     encodedTokenSaleProgramAccountData
@@ -60,7 +60,7 @@ const transaction = async () => {
       createAccountInfo(buyerKeypair.publicKey, true, true),
       createAccountInfo(tokenSaleProgramAccountData.sellerPubkey, false, true),
       createAccountInfo(tokenSaleProgramAccountData.tempTokenAccountPubkey, false, true),
-      createAccountInfo(tokenSaleProgramPubkey, false, false),
+      createAccountInfo(tokenSaleProgramAccountPubkey, false, false),
       createAccountInfo(SystemProgram.programId, false, false),
       createAccountInfo(buyerTokenAccount.address, false, true),
       createAccountInfo(TOKEN_PROGRAM_ID, false, false),
@@ -79,7 +79,7 @@ const transaction = async () => {
   //wait block update
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
-  //phase1 (check token sale )
+  //phase2 (check token sale)
   const sellerTokenAccountBalance = await connection.getTokenAccountBalance(sellerTokenAccountPubkey);
   const tempTokenAccountBalance = await connection.getTokenAccountBalance(tempTokenAccountPubkey);
   const buyerTokenAccountBalance = await connection.getTokenAccountBalance(buyerTokenAccount.address);

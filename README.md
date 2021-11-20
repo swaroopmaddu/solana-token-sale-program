@@ -104,8 +104,8 @@ npm run buyToken
 
 ### SmartContract
 
-- Close temp token account for retrieve remain token
+- Nothing
 
 ### RPC Client
 
-- Client for interaction with retrieve remain token
+- Nothing

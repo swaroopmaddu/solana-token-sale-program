@@ -6,6 +6,7 @@ import {
   clusterApiUrl,
   Connection,
   Keypair,
+  LAMPORTS_PER_SOL,
   PublicKey,
   SystemProgram,
   SYSVAR_RENT_PUBKEY,
@@ -42,8 +43,7 @@ const transaction = async () => {
   console.log("sellerTokenAccountPubkey: ", sellerTokenAccountPubkey.toBase58());
   const instruction: InstructionNumber = 0;
   const amountOfTokenWantToSale = 1000;
-  const swapSolAmount = 1;
-  const swapTokenAmount = 10;
+  const perTokenPrice = 0.1*LAMPORTS_PER_SOL;
 
   const tempTokenAccountKeypair = new Keypair();
   const createTempTokenAccountIx = SystemProgram.createAccount({
@@ -89,7 +89,7 @@ const transaction = async () => {
       createAccountInfo(TOKEN_PROGRAM_ID, false, false),
     ],
     data: Buffer.from(
-      Uint8Array.of(instruction, ...new BN(swapSolAmount).toArray("le", 8), ...new BN(swapTokenAmount).toArray("le", 8))
+      Uint8Array.of(instruction, ...new BN(perTokenPrice).toArray("le", 8))
     ),
   });
 
@@ -124,8 +124,7 @@ const transaction = async () => {
     isInitialized: 1,
     sellerPubkey: sellerKeypair.publicKey,
     tempTokenAccountPubkey: tempTokenAccountKeypair.publicKey,
-    swapSolAmount: swapSolAmount,
-    swapTokenAmount: swapTokenAmount,
+    pricePerToken: perTokenPrice,
   };
 
   console.log("Current TokenSaleProgramAccountData");

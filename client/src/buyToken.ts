@@ -15,13 +15,14 @@ import {
 import { createAccountInfo, checkAccountInitialized } from "./utils";
 import { Token, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { TokenSaleAccountLayoutInterface, TokenSaleAccountLayout } from "./account";
+import BN = require("bn.js");
 
 type InstructionNumber = 0 | 1 | 2;
 
 const transaction = async () => {
   console.log("3. Buy Tokens");
   //phase1 (setup Transaction & send Transaction)
-  console.log("Setup Transaction");
+  console.log("Setup Buy Transaction");
   const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
   const tokenSaleProgramId = new PublicKey(process.env.CUSTOM_PROGRAM_ID!);
   const sellerPubkey = new PublicKey(process.env.SELLER_PUBLIC_KEY!);
@@ -31,6 +32,8 @@ const transaction = async () => {
     publicKey: buyerPubkey.toBytes(),
     secretKey: buyerPrivateKey,
   });
+
+  const number_of_tokens = 100;
 
   const tokenPubkey = new PublicKey(process.env.TOKEN_PUBKEY!);
   const tokenSaleProgramAccountPubkey = new PublicKey(process.env.TOKEN_SALE_PROGRAM_ACCOUNT_PUBKEY!);
@@ -68,8 +71,10 @@ const transaction = async () => {
       createAccountInfo(TOKEN_PROGRAM_ID, false, false),
       createAccountInfo(PDA[0], false, false),
     ],
-    data: Buffer.from(Uint8Array.of(instruction)),
+    data: Buffer.from(Uint8Array.of(instruction, ...new BN(number_of_tokens).toArray("le",8))),
   });
+
+    
   const tx = new Transaction().add(buyTokenIx);
 
   await connection.sendTransaction(tx, [buyerKeypair], {

@@ -32,7 +32,7 @@ const setup = async () => {
   const sellerTokenBalance = await connection.getTokenAccountBalance(sellerTokenAccount.address, "confirmed");
 
   console.log("Requesting SOL for buyer...");
-  await connection.requestAirdrop(buyerPubkey, LAMPORTS_PER_SOL * 2);
+  //await connection.requestAirdrop(buyerPubkey, LAMPORTS_PER_SOL * 2);
 
   const sellerSOLBalance = await connection.getBalance(sellerPubkey, "confirmed");
   const buyerSOLBalance = await connection.getBalance(buyerPubkey, "confirmed");

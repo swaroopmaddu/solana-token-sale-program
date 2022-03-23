@@ -13,7 +13,6 @@
     "all": "npm run compile && node build/setup.js && node build/startTokenSale.js && node build/buyToken.js && node build/closeTokenSale.js"
   },
   "author": "",
-  "license": "ISC",
   "devDependencies": {
     "@types/bs58": "^4.0.1",
     "@typescript-eslint/eslint-plugin": "^4.31.2",

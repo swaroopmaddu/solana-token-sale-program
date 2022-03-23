@@ -1,4 +1,4 @@
-# solana-token-sale-program
+# Solana Token Sale Program
 
 Swap SPL tokens for SOL at a fixed price
 

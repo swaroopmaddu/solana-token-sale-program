@@ -33,11 +33,11 @@ $ solana program deploy target/deploy/spl_tokensale_solana.so
 Before running RPC Client, Change .example-env to .env. And refer to the below and fill NEEDED section.
 
 ```
-CUSTOM_PROGRAM_ID=5yznMbghv1Z2Gb4uaKkY9fxb9PkLMrSn9xgjswucHq4X
-SELLER_PUBLIC_KEY=NEEDED!
-SELLER_PRIVATE_KEY=NEEDED!
-BUYER_PUBLIC_KEY=NEEDED!
-BUYER_PRIVATE_KEY=NEEDED!
+CUSTOM_PROGRAM_ID=NEEDED
+SELLER_PUBLIC_KEY=NEEDED
+SELLER_PRIVATE_KEY=NEEDED
+BUYER_PUBLIC_KEY=NEEDED
+BUYER_PRIVATE_KEY=NEEDED
 TOKEN_PUBKEY=Dont'mind this
 SELLER_TOKEN_ACCOUNT_PUBKEY=Dont'mind this
 TEMP_TOKEN_ACCOUNT_PUBKEY=Dont'mind this

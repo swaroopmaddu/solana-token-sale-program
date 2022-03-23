@@ -2,17 +2,20 @@
 import * as dotenv from "dotenv";
 dotenv.config();
 
-import { Connection, PublicKey, Transaction, TransactionInstruction, Keypair, LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { Connection, PublicKey, Transaction, TransactionInstruction, Keypair, LAMPORTS_PER_SOL, clusterApiUrl } from "@solana/web3.js";
 import { createAccountInfo, checkAccountInitialized } from "./utils";
 import { TOKEN_PROGRAM_ID, Token } from "@solana/spl-token";
 import { TokenSaleAccountLayoutInterface, TokenSaleAccountLayout } from "./account";
 
 type InstructionNumber = 0 | 1 | 2;
 
-const transaction = async () => {
+const transaction = async () => { 
+   
+  console.log("4. Close Token Sale");
+
   //phase1 (setup Transaction & send Transaction)
   console.log("Setup Transaction");
-  const connection = new Connection("http://localhost:8899", "confirmed");
+  const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
   const tokenSaleProgramId = new PublicKey(process.env.CUSTOM_PROGRAM_ID!);
   const sellerPubkey = new PublicKey(process.env.SELLER_PUBLIC_KEY!);
   const sellerPrivateKey = Uint8Array.from(JSON.parse(process.env.SELLER_PRIVATE_KEY!));

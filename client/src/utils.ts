@@ -43,7 +43,7 @@ export const checkAccountInitialized = async (connection: Connection, customAcco
   const customAccount = await connection.getAccountInfo(customAccountPubkey);
 
   if (customAccount === null || customAccount.data.length === 0) {
-    console.log("Account of custom program has not been initialized properly");
+    console.error("Account of custom program has not been initialized properly");
     process.exit(1);
   }
 

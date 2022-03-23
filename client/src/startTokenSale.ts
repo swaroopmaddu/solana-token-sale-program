@@ -3,6 +3,7 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 import {
+  clusterApiUrl,
   Connection,
   Keypair,
   PublicKey,
@@ -23,10 +24,12 @@ import { AccountLayout, Token, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 
 type InstructionNumber = 0 | 1 | 2;
 
-const transaction = async () => {
+const transaction = async () => {  
+  console.log("2. Start Token Sale");
+
   //phase1 (setup Transaction & send Transaction)
   console.log("Setup Transaction");
-  const connection = new Connection("http://localhost:8899", "confirmed");
+  const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
   const tokenSaleProgramId = new PublicKey(process.env.CUSTOM_PROGRAM_ID!);
   const sellerPubkey = new PublicKey(process.env.SELLER_PUBLIC_KEY!);
   const sellerPrivateKey = Uint8Array.from(JSON.parse(process.env.SELLER_PRIVATE_KEY!));
@@ -36,9 +39,9 @@ const transaction = async () => {
   });
   const tokenMintAccountPubkey = new PublicKey(process.env.TOKEN_PUBKEY!);
   const sellerTokenAccountPubkey = new PublicKey(process.env.SELLER_TOKEN_ACCOUNT_PUBKEY!);
-
+  console.log("sellerTokenAccountPubkey: ", sellerTokenAccountPubkey.toBase58());
   const instruction: InstructionNumber = 0;
-  const amountOfTokenWantToSale = 100;
+  const amountOfTokenWantToSale = 1000;
   const swapSolAmount = 1;
   const swapTokenAmount = 10;
 
@@ -107,7 +110,7 @@ const transaction = async () => {
   //phase1 end
 
   //wait block update
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  await new Promise((resolve) => setTimeout(resolve, 2000));
 
   //phase2 (check Transaction result is valid)
   const tokenSaleProgramAccount = await checkAccountInitialized(connection, tokenSaleProgramAccountKeypair.publicKey);

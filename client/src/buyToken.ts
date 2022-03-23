@@ -3,6 +3,7 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 import {
+  clusterApiUrl,
   Connection,
   Keypair,
   LAMPORTS_PER_SOL,
@@ -18,9 +19,10 @@ import { TokenSaleAccountLayoutInterface, TokenSaleAccountLayout } from "./accou
 type InstructionNumber = 0 | 1 | 2;
 
 const transaction = async () => {
+  console.log("3. Buy Tokens");
   //phase1 (setup Transaction & send Transaction)
   console.log("Setup Transaction");
-  const connection = new Connection("http://localhost:8899", "confirmed");
+  const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
   const tokenSaleProgramId = new PublicKey(process.env.CUSTOM_PROGRAM_ID!);
   const sellerPubkey = new PublicKey(process.env.SELLER_PUBLIC_KEY!);
   const buyerPubkey = new PublicKey(process.env.BUYER_PUBLIC_KEY!);

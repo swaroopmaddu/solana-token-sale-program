@@ -5,10 +5,11 @@ use crate::error::CustomError::InvalidInstruction;
 
 pub enum TokenSaleInstruction {
     InitTokenSale {
-        swap_sol_amount: u64,
-        swap_token_amount: u64,
+        per_token_price: u64,
     },
-    BuyToken {},
+    BuyToken {
+        number_of_tokens: u64,
+    },
     EndTokenSale {}
 }
 
@@ -21,10 +22,11 @@ impl TokenSaleInstruction {
         //unpack the rest data for each instruction
         return match tag {
             0 => Ok(Self::InitTokenSale {
-                swap_sol_amount: Self::unpack_byte(rest, 0)?,
-                swap_token_amount: Self::unpack_byte(rest, 1)?,
+                per_token_price: Self::unpack_byte(rest, 0)?,
             }),
-            1 => Ok(Self::BuyToken {}),
+            1 => Ok(Self::BuyToken {
+                number_of_tokens: Self::unpack_byte(rest, 0)?,
+            }),
             2 => Ok(Self::EndTokenSale {}),
             _ => Err(InvalidInstruction.into()),
         };

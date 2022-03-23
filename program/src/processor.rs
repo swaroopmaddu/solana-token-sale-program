@@ -2,7 +2,6 @@ use solana_program::{
     account_info::{next_account_info, AccountInfo},
     entrypoint::ProgramResult,
     msg,
-    native_token::LAMPORTS_PER_SOL,
     program::{invoke, invoke_signed},
     program_error::ProgramError,
     program_pack::Pack,
@@ -24,21 +23,17 @@ impl Processor {
         let instruction = TokenSaleInstruction::unpack(instruction_data)?;
 
         match instruction {
-            TokenSaleInstruction::InitTokenSale {
-                swap_sol_amount,
-                swap_token_amount,
-            } => {
+            TokenSaleInstruction::InitTokenSale { per_token_price, } => {
                 msg!("Instruction: init token sale program");
                 Self::init_token_sale_program(
                     accounts,
-                    swap_sol_amount,
-                    swap_token_amount,
+                    per_token_price,
                     token_program_id,
                 )
             }
-            TokenSaleInstruction::BuyToken {} => {
+            TokenSaleInstruction::BuyToken { number_of_tokens } => {
                 msg!("Instruction: buy token");
-                Self::buy_token(accounts, token_program_id)
+                Self::buy_token(accounts, token_program_id, number_of_tokens)
             }
 
             TokenSaleInstruction::EndTokenSale {} => {
@@ -53,11 +48,11 @@ impl Processor {
     //token sale program account info - Save the data about token sale
     //rent - To check if the rent fee is exempted
     //token program - To change the owner of temp token account to token sale program
+    //per_token_price - Fixed price per each SPL token in LAMPORTS.
 
     fn init_token_sale_program(
         account_info_list: &[AccountInfo],
-        swap_sol_amount: u64,
-        swap_token_amount: u64,
+        per_token_price: u64,
         token_sale_program_id: &Pubkey,
     ) -> ProgramResult {
         let account_info_iter = &mut account_info_list.iter();
@@ -96,8 +91,7 @@ impl Processor {
             true,
             *seller_account_info.key,
             *temp_token_account_info.key,
-            swap_sol_amount,
-            swap_token_amount,
+            per_token_price,
         );
 
         TokenSaleProgramData::pack(
@@ -139,8 +133,9 @@ impl Processor {
     //buyer token account info - For the buyer to receive the token
     //token program - For transfer the token
     //pda - For signing when send the token from temp token account
+    // number_of_tokens - Amount of tokens user want to buy
 
-    fn buy_token(accounts: &[AccountInfo], token_sale_program_id: &Pubkey) -> ProgramResult {
+    fn buy_token(accounts: &[AccountInfo], token_sale_program_id: &Pubkey, number_of_tokens:u64) -> ProgramResult {
         let account_info_iter = &mut accounts.iter();
         let buyer_account_info = next_account_info(account_info_iter)?;
         if !buyer_account_info.is_signer {
@@ -163,12 +158,13 @@ impl Processor {
             return Err(ProgramError::InvalidAccountData);
         }
 
-        msg!("transfer SOL : buy account -> seller account");
+        msg!("Transfer {} SOL : buy account -> seller account",token_sale_program_account_data.per_token_price * number_of_tokens);
         let transfer_sol_to_seller = system_instruction::transfer(
             buyer_account_info.key,
             seller_account_info.key,
-            token_sale_program_account_data.swap_sol_amount * LAMPORTS_PER_SOL,
+            token_sale_program_account_data.per_token_price * number_of_tokens,
         );
+        
 
         let system_program = next_account_info(account_info_iter)?;
         invoke(
@@ -192,7 +188,7 @@ impl Processor {
             buyer_token_account_info.key,
             &pda,
             &[&pda],
-            token_sale_program_account_data.swap_token_amount,
+            number_of_tokens,
         )?;
 
         let pda = next_account_info(account_info_iter)?;

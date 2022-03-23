@@ -23,7 +23,13 @@ $ cd token/program
 $ cargo build-bpf
 ```
 
-# Set Environment
+### Deploy
+
+```
+$ solana program deploy target/deploy/spl_tokensale_solana.so
+```
+
+### Set Environment
 Before running RPC Client, Change .example-env to .env. And refer to the below and fill NEEDED section.
 
 ```

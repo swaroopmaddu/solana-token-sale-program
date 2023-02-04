@@ -19,5 +19,8 @@ zeroize = "=1.3.0"
 [lib]
 crate-type = ["cdylib", "lib"]
 
+[profile.release]
+overflow-checks = true
+
 [profile.dev]
 overflow-checks = true

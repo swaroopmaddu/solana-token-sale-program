@@ -40,6 +40,11 @@ impl Processor {
                 msg!("Instrcution : end token sale");
                 Self::end_token_sale(accounts, token_program_id)
             }
+
+            TokenSaleInstruction::UpdateTokenPrice { new_per_token_price } => {
+                msg!("Instrcution : update token price");
+                Self::update_token_price(accounts, new_per_token_price)
+            }
         }
     }
 
@@ -125,6 +130,44 @@ impl Processor {
         return Ok(());
     }
 
+    fn update_token_price(
+        accounts: &[AccountInfo],
+        new_per_token_price: u64,
+    ) -> ProgramResult {
+        let account_info_iter = &mut accounts.iter();
+    
+        // The first account is expected to be the seller account.
+        let seller_account_info = next_account_info(account_info_iter)?;
+        if !seller_account_info.is_signer {
+            return Err(ProgramError::MissingRequiredSignature);
+        }
+    
+        // The second account is expected to be the token sale program account.
+        let token_sale_program_account_info = next_account_info(account_info_iter)?;
+    
+        // Load the existing token sale program data.
+        let mut token_sale_program_account_data =
+            TokenSaleProgramData::unpack(&token_sale_program_account_info.try_borrow_data()?)?;
+    
+        // Ensure the caller is the original seller.
+        if *seller_account_info.key != token_sale_program_account_data.seller_pubkey {
+            return Err(ProgramError::InvalidAccountData);
+        }
+    
+        // Update the per_token_price.
+        token_sale_program_account_data.per_token_price = new_per_token_price;
+    
+        // Write the updated data back to the account.
+        TokenSaleProgramData::pack(
+            token_sale_program_account_data,
+            &mut token_sale_program_account_info.try_borrow_mut_data()?,
+        )?;
+    
+        msg!("Updated per token price to {} lamports", new_per_token_price);
+    
+        Ok(())
+    }    
+
     //buyer account info
     //seller account info
     //temp token account info - For transfer the token to Buyer
@@ -179,6 +222,12 @@ impl Processor {
         msg!("transfer Token : temp token account -> buyer token account");
         let buyer_token_account_info = next_account_info(account_info_iter)?;
         let token_program = next_account_info(account_info_iter)?;
+
+        // fetch the number of decimals
+        let token_mint_address = next_account_info(account_info_iter)?;
+        let token_mint = spl_token::state::Mint::unpack(&token_mint_address.data.borrow())?;
+        let decimals = token_mint.decimals;
+
         let (pda, bump_seed) =
             Pubkey::find_program_address(&[b"token_sale"], token_sale_program_id);
 
@@ -188,7 +237,7 @@ impl Processor {
             buyer_token_account_info.key,
             &pda,
             &[&pda],
-            number_of_tokens,
+            number_of_tokens * 10u64.pow(decimals as u32),
         )?;
 
         let pda = next_account_info(account_info_iter)?;

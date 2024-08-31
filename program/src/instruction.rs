@@ -10,6 +10,9 @@ pub enum TokenSaleInstruction {
     BuyToken {
         number_of_tokens: u64,
     },
+    UpdateTokenPrice {
+        new_per_token_price: u64,
+    },
     EndTokenSale {}
 }
 
@@ -28,6 +31,9 @@ impl TokenSaleInstruction {
                 number_of_tokens: Self::unpack_byte(rest, 0)?,
             }),
             2 => Ok(Self::EndTokenSale {}),
+            3 => Ok(Self::UpdateTokenPrice {
+                new_per_token_price: Self::unpack_byte(rest, 0)?,
+            }),
             _ => Err(InvalidInstruction.into()),
         };
     }

@@ -2,15 +2,22 @@
 import * as dotenv from "dotenv";
 dotenv.config();
 
-import { Connection, PublicKey, Transaction, TransactionInstruction, Keypair, LAMPORTS_PER_SOL, clusterApiUrl } from "@solana/web3.js";
+import {
+  Connection,
+  PublicKey,
+  Transaction,
+  TransactionInstruction,
+  Keypair,
+  LAMPORTS_PER_SOL,
+  clusterApiUrl,
+} from "@solana/web3.js";
 import { createAccountInfo, checkAccountInitialized } from "./utils";
 import { TOKEN_PROGRAM_ID, Token } from "@solana/spl-token";
 import { TokenSaleAccountLayoutInterface, TokenSaleAccountLayout } from "./account";
 
-type InstructionNumber = 0 | 1 | 2;
+type InstructionNumber = 0 | 1 | 2 | 3;
 
-const transaction = async () => { 
-   
+const transaction = async () => {
   console.log("4. Close Token Sale");
 
   //phase1 (setup Transaction & send Transaction)
@@ -81,8 +88,8 @@ const transaction = async () => {
 
   console.table([
     {
-      sellerTokenAccountBalance: sellerTokenAccountBalance.value.amount.toString(),
-      buyerTokenAccountBalance: buyerTokenAccountBalance.value.amount.toString(),
+      sellerTokenAccountBalance: sellerTokenAccountBalance.value.uiAmountString,
+      buyerTokenAccountBalance: buyerTokenAccountBalance.value.uiAmountString,
     },
   ]);
 

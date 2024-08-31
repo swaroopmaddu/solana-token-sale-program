@@ -17,7 +17,7 @@ import { Token, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { TokenSaleAccountLayoutInterface, TokenSaleAccountLayout } from "./account";
 import BN = require("bn.js");
 
-type InstructionNumber = 0 | 1 | 2;
+type InstructionNumber = 0 | 1 | 2 | 3;
 
 const transaction = async () => {
   console.log("3. Buy Tokens");
@@ -69,12 +69,12 @@ const transaction = async () => {
       createAccountInfo(SystemProgram.programId, false, false),
       createAccountInfo(buyerTokenAccount.address, false, true),
       createAccountInfo(TOKEN_PROGRAM_ID, false, false),
+      createAccountInfo(tokenPubkey, false, false),
       createAccountInfo(PDA[0], false, false),
     ],
-    data: Buffer.from(Uint8Array.of(instruction, ...new BN(number_of_tokens).toArray("le",8))),
+    data: Buffer.from(Uint8Array.of(instruction, ...new BN(number_of_tokens).toArray("le", 8))),
   });
 
-    
   const tx = new Transaction().add(buyTokenIx);
 
   await connection.sendTransaction(tx, [buyerKeypair], {
@@ -93,9 +93,9 @@ const transaction = async () => {
 
   console.table([
     {
-      sellerTokenAccountBalance: sellerTokenAccountBalance.value.amount.toString(),
-      tempTokenAccountBalance: tempTokenAccountBalance.value.amount.toString(),
-      buyerTokenAccountBalance: buyerTokenAccountBalance.value.amount.toString(),
+      sellerTokenAccountBalance: sellerTokenAccountBalance.value.uiAmountString,
+      tempTokenAccountBalance: tempTokenAccountBalance.value.uiAmountString,
+      buyerTokenAccountBalance: buyerTokenAccountBalance.value.uiAmountString,
     },
   ]);
 

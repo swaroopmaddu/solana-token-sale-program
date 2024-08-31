@@ -6,8 +6,7 @@ import { Connection, Keypair, PublicKey, LAMPORTS_PER_SOL, clusterApiUrl } from 
 import { Token, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { updateEnv } from "./utils";
 
-const setup = async () => {  
-  
+const setup = async () => {
   console.log("1. Setup Accounts");
 
   const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
@@ -17,21 +16,23 @@ const setup = async () => {
     publicKey: sellerPubkey.toBytes(),
     secretKey: sellerPrivateKey,
   });
-  
+
   const buyerPubkey = new PublicKey(process.env.BUYER_PUBLIC_KEY!);
+  const tokenPubkey = new PublicKey(process.env.TOKEN_PUBKEY!);
 
-  console.log("Create Token Mint Account...\n");
-  const token = await Token.createMint(connection, sellerKeypair, sellerKeypair.publicKey, null, 0, TOKEN_PROGRAM_ID);
+  // console.log("Create Token Mint Account...\n");
+  //const token = await Token.createMint(connection, sellerKeypair, sellerKeypair.publicKey, null, 0, TOKEN_PROGRAM_ID);
 
+  const token = new Token(connection, tokenPubkey, TOKEN_PROGRAM_ID, sellerKeypair);
   console.log("Create Seller Token Account...\n");
   const sellerTokenAccount = await token.getOrCreateAssociatedAccountInfo(sellerKeypair.publicKey);
 
-  console.log("Mint 5000 Tokens to seller token account...\n");
-  await token.mintTo(sellerTokenAccount.address, sellerKeypair, [], 5000);
+  // console.log("Mint 5000 Tokens to seller token account...\n");
+  // await token.mintTo(sellerTokenAccount.address, sellerKeypair, [], 5000);
 
   const sellerTokenBalance = await connection.getTokenAccountBalance(sellerTokenAccount.address, "confirmed");
 
-  console.log("Requesting SOL for buyer...");
+  // console.log("Requesting SOL for buyer...");
   //await connection.requestAirdrop(buyerPubkey, LAMPORTS_PER_SOL * 2);
 
   const sellerSOLBalance = await connection.getBalance(sellerPubkey, "confirmed");
@@ -48,13 +49,13 @@ const setup = async () => {
     {
       tokenPubkey: token.publicKey.toString(),
       sellerTokenAccountPubkey: sellerTokenAccount.address.toString(),
-      sellerTokenBalance: sellerTokenBalance.value.amount,
+      sellerTokenBalance: sellerTokenBalance.value.uiAmountString,
     },
   ]);
   console.log(`✨TX successfully finished✨\n`);
 
   process.env.SELLER_TOKEN_ACCOUNT_PUBKEY = sellerTokenAccount.address.toString();
-  process.env.TOKEN_PUBKEY = token.publicKey.toString();
+  // process.env.TOKEN_PUBKEY = token.publicKey.toString();
   updateEnv();
 };
 
